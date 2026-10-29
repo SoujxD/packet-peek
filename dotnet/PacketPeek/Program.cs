@@ -36,6 +36,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<PacketQueue>();
 builder.Services.AddHostedService<EngineBridge>();
+builder.Services.AddSingleton<RuleEvaluator>();
+builder.Services.AddHostedService<RuleWorker>();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseSwagger(); app.UseSwaggerUI();
@@ -43,6 +45,7 @@ app.UseAuthentication(); app.UseAuthorization();
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 app.MapAuth();
 app.MapRuleEndpoints();
+app.MapReadEndpoints();
 await app.InitializeDatabase();
 app.Run();
 
