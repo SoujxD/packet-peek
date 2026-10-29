@@ -1,0 +1,28 @@
+# Build outputs
+build/
+bin/
+obj/
+TestResults/
+coverage/
+
+# Editor and local configuration
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+.env
+.env.*
+!.env.example
+
+# Runtime outputs and captures
+logs/
+*.log
+*.pcap
+*.pcapng
+!tests/fixtures/*.pcap
+!tests/fixtures/*.pcapng
+
+# Operating system files
+.DS_Store
+Thumbs.db
