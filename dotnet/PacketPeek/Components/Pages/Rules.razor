@@ -1,0 +1,38 @@
+@page "/rules"
+@inherits SessionComponent
+<PageTitle>Rules | PacketPeek</PageTitle>
+<h1>Rules</h1>
+@if (!Session.Authenticated) { <p>Sign in to manage rules.</p> }
+else
+{
+    <p>Fire when a metric exceeds its threshold within the selected window. Alerts re-arm once the value falls back.</p>
+    @if (error.Length > 0) { <p role="alert" class="error">@error</p> }
+    <EditForm Model="form" OnValidSubmit="Save">
+        <ValidationSummary />
+        <label>Name <InputText @bind-Value="form.Name" /></label>
+        <label>Metric <InputSelect @bind-Value="form.Metric"><option>packets</option><option>bytes</option><option>distinct_dst_ips</option></InputSelect></label>
+        <label>Group by <InputSelect @bind-Value="form.Grouping"><option>src_ip</option><option>src_ip+dst_port</option></InputSelect></label>
+        <label>Window (seconds) <InputNumber @bind-Value="form.WindowSeconds" /></label>
+        <label>Threshold <InputNumber @bind-Value="form.Threshold" /></label>
+        <label class="check"><InputCheckbox @bind-Value="form.Active" /> Active</label>
+        <button type="submit" disabled="@busy">@(id is null ? "Create rule" : "Save changes")</button>
+        <button type="button" @onclick="Reset">Reset</button>
+    </EditForm>
+    <div class="table"><table><thead><tr><th>Name</th><th>Metric</th><th>Grouping</th><th>Window</th><th>Threshold</th><th>Active</th><th>Actions</th></tr></thead><tbody>
+    @foreach (var rule in Session.Rules)
+    { <tr><td>@rule.Name</td><td>@rule.Metric</td><td>@rule.Grouping</td><td>@rule.WindowSeconds s</td><td>@rule.Threshold</td><td>@rule.Active</td><td><button @onclick="() => Edit(rule)">Edit</button><button @onclick="() => Delete(rule.Id)" disabled="@busy">Delete</button></td></tr> }
+    </tbody></table></div>
+}
+@code {
+    private class Form { public string Name { get; set; } = ""; public string Metric { get; set; } = "packets"; public string Grouping { get; set; } = "src_ip"; public int WindowSeconds { get; set; } = 10; public long Threshold { get; set; } = 100; public bool Active { get; set; } = true; }
+    private Form form = new(); private int? id; private string error = ""; private bool busy;
+    private void Reset() { id = null; form = new(); error = ""; }
+    private void Edit(Rule rule) { id = rule.Id; form = new() { Name = rule.Name, Metric = rule.Metric, Grouping = rule.Grouping, WindowSeconds = rule.WindowSeconds, Threshold = rule.Threshold, Active = rule.Active }; }
+    private async Task Save()
+    {
+        busy = true; error = "";
+        try { await Session.SaveRule(id, new(form.Name, form.Metric, form.Grouping, form.WindowSeconds, form.Threshold, form.Active)); Reset(); }
+        catch (Exception ex) { error = ex.Message; } finally { busy = false; }
+    }
+    private async Task Delete(int ruleId) { busy = true; error = ""; try { await Session.DeleteRule(ruleId); Reset(); } catch (Exception ex) { error = ex.Message; } finally { busy = false; } }
+}

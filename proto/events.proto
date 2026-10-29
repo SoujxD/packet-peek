@@ -1,0 +1,26 @@
+syntax = "proto3";
+package peek;
+option csharp_namespace = "PacketPeek.Protocol";
+
+message PacketEvent {
+  uint64 timestamp_us = 1;
+  string src_ip = 2;
+  string dst_ip = 3;
+  uint32 src_port = 4;
+  uint32 dst_port = 5;
+  uint32 protocol = 6;
+  uint32 bytes = 7;
+}
+message FlowSummary {
+  PacketEvent tuple = 1;
+  uint64 first_us = 2;
+  uint64 last_us = 3;
+  uint64 packets = 4;
+  uint64 bytes = 5;
+}
+message EngineEvent {
+  oneof event {
+    PacketEvent packet = 1;
+    FlowSummary flow = 2;
+  }
+}

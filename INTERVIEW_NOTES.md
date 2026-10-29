@@ -1,0 +1,54 @@
+# Interview notes
+
+Study notes, not reviewer marketing. Both CI jobs passed on GitHub PR #1 and are enforced on main. Physical-NIC wire-speed testing remains unverified.
+
+- `README.md`: separates implemented behavior from measured results because the benchmark's offered load did not establish saturated capacity or a kernel-filter speedup.
+- `proto/events.proto`: a shared protobuf envelope with `oneof` distinguishes packets from flow closures without runtime transport-specific type guessing; stdout framing is four-byte network-order length plus payload.
+- `c/CMakeLists.txt`: CMake resolves libpcap, protobuf-c, and Criterion through pkg-config; generated C bindings are committed so ordinary builds do not require a generator.
+- `Makefile`: a small shim provides `make c-test` while CMake remains the only native build definition; explicit system Python in CI avoids mismatching apt's protobuf module with a hosted Python installation.
+- `c/src/main.c`: exactly one file or interface input and one BPF expression keep v1's CLI explicit; diagnostics never contaminate binary stdout.
+- `c/src/parser.c`: byte reads and explicit captured-length checks avoid alignment, endianness, and struct-padding assumptions; fragments/extension chains are rejected rather than pretending their bytes are transport headers.
+- `c/include/peek/parser.h`: small typed parser results expose only the headers v1 needs, instead of leaking libpcap buffers into every consumer.
+- `c/src/flow.c`: a fixed 4,096-slot open-addressing table bounds allocation and uses tombstones to preserve collision chains; explicit full-table failure avoids silently evicting unreported flows.
+- `c/include/peek/flow.h`: keys retain address family so IPv4 and IPv6 byte patterns cannot collide semantically; flows are directional five-tuples rather than inferred bidirectional conversations.
+- `c/src/capture.c`: libpcap supplies portable file/live capture and BPF; a nonblocking live loop permits inactivity sweeps on quiet interfaces, with EOF flushing every remaining flow.
+- `c/src/emitter.c`: protobuf-c suits a desktop/server C process without embedded fixed-buffer constraints; pipe writes flush events and EPIPE closes cleanly instead of crashing by SIGPIPE.
+- `c/generated/events.pb-c.*`: generated wire bindings are mechanical outputs, not hand-maintained serialization; regenerate them from the schema rather than editing descriptors.
+- `c/tests/test_parser.c`: handcrafted bytes make endianness and boundary cases visible; each parser had a red test before its separate implementation commit.
+- `c/tests/test_flow.c`: collisions, tombstone lookup, exact expiry, full capacity, and sweeps test the table's externally observable guarantees rather than its slot layout.
+- `c/tests/test_framing.c`: a real serialization round trip checks prefix byte order and message contents instead of assuming successful fwrite means a correct protocol.
+- `c/tests/test_pcap.c`: Criterion also parses the committed pcap records, checking header fields independently of the Python replay/count integration test.
+- `tests/generate_fixture.py`: deterministic local traffic avoids a private or irreproducible pcap dependency; HTTP-looking payload is not application parsing.
+- `tests/test_replay.py`: BPF selection and equivalent emitted bytes verify both installed and explicitly userspace filter modes against the same fixture.
+- `tests/test_framing.py`: streaming frame decoding checks real subprocess output and closure behavior, independently from C unit tests.
+- `dotnet/PacketPeek/Program.cs`: one ASP.NET Core 8 host wires Minimal APIs, workers, SignalR, and Blazor; JWT options validate at startup after test configuration has been applied.
+- `dotnet/PacketPeek/Entities.cs`: structured rule columns deliberately replace a DSL parser; one Identity user type and operator role implement a single-tenant model.
+- `dotnet/PacketPeek/AppDbContext.cs`: Npgsql/Postgres avoids SQL Server licensing/deployment friction; restricted deletion preserves alert-to-rule history instead of cascading evidence away.
+- `dotnet/PacketPeek/DesignTimeDbContextFactory.cs`: EF tooling can generate migrations without needing production secrets or starting capture/background services.
+- `dotnet/PacketPeek/Migrations/*`: committed schema history makes fresh-database setup repeatable; Testcontainers tests the migration on the actual Postgres provider rather than an in-memory substitute.
+- `dotnet/PacketPeek/Auth.cs`: Identity owns password hashing and lockout accounting; short-lived signed JWTs authorize the operator, with no public signup or multi-tenant account model.
+- `dotnet/PacketPeek/RuleEndpoints.cs`: Minimal APIs fit a small CRUD surface; explicit FluentValidation calls are necessary because Minimal APIs do not automatically execute these validators.
+- `dotnet/PacketPeek/ReadEndpoints.cs`: bounded latest-first lists keep a functional v1 console small; alert detail fetches rule context without serializing tracked navigation graphs.
+- `dotnet/PacketPeek/EngineBridge.cs`: a child process isolates native crashes from the managed address space and is independently testable; a waiting bounded channel propagates backpressure through stdout rather than dropping managed events.
+- `dotnet/PacketPeek/EngineBridge.cs` shutdown: close the pipe read end, allow five seconds for EPIPE/graceful exit, then terminate a stuck process tree; stderr is drained separately so diagnostics cannot deadlock stdout.
+- `dotnet/PacketPeek/RuleEvaluator.cs`: a pure event-time window evaluator makes replay deterministic; crossing alerts avoid one alert per packet while a condition remains above threshold, with explicit re-arming and edited-rule state reset.
+- `dotnet/PacketPeek/RuleEvaluator.cs` tradeoff: list-based windows and a rule query per packet favor clarity over throughput; memory grows with events inside active windows, and this is not a production-scale detection engine.
+- `dotnet/PacketPeek/LiveHub.cs`: latest-value sampling caps packet publication while persisted alerts bypass sampling; connected-client delivery is live notification, not a durable acknowledgement protocol.
+- `dotnet/PacketPeek/ConsoleSession.cs`: a circuit-scoped JWT/API/SignalR client keeps credentials out of browser storage; Compose supplies an internal API URL because a mapped host port may differ from the container's listener.
+- `dotnet/PacketPeek/Components/*`: three plain Blazor Server pages reuse the authenticated API and hub, avoiding a second business-logic layer or an extra frontend build toolchain.
+- `dotnet/PacketPeek/wwwroot/app.css`: plain responsive CSS meets the functional-console requirement without adding Tailwind or a design-system dependency.
+- `dotnet/PacketPeek.Tests/HealthTests.cs`: WebApplicationFactory exercises the actual pipeline in-process; an explicit content root also permits managed test assemblies built on Linux to run on Windows.
+- `dotnet/PacketPeek.Tests/DatabaseTests.cs`: disposable Testcontainers Postgres verifies provider-specific schema behavior and migration idempotence without contaminating a developer's database.
+- `dotnet/PacketPeek.Tests/RuleTests.cs`: real JWT authorization and real Identity login test security middleware alongside every CRUD operation and invalid rule shapes.
+- `dotnet/PacketPeek.Tests/BridgeTests.cs`: filling a real bounded channel verifies blocking/resumption/cancellation; truncated and oversized frames fail before unsafe allocation or interpretation.
+- `dotnet/PacketPeek.Tests/EvaluatorTests.cs`: handcrafted streams cover all six grammar shapes, equality boundaries, expiry, grouping, deduplication, edits, and deactivation.
+- `dotnet/PacketPeek.Tests/SignalRTests.cs`: an actual SignalR client verifies persisted alerts arrive and packets stay within the sample budget; long polling allows the in-process TestServer transport.
+- `Dockerfile`: separate native and .NET build stages produce one nonroot runtime container, retaining the process boundary while removing compiler toolchains from runtime.
+- `docker-compose.yml`: Postgres health gates app startup; required environment secrets avoid committed credentials, and a named volume retains operator/rule/alert history.
+- `tests/e2e/run.sh`: API-created rules followed by a host-managed pcap replay test the entire data path; unique project names and scoped teardown isolate test storage.
+- `tests/ui/*`: optional Chromium smoke tests exercise real Blazor interactions and preserve screenshots locally; they verify login, rules CRUD, flow/alert display, drill-down, and logout without adding frontend production dependencies.
+- `.github/workflows/ci.yml`: the managed job depends on the uploaded native binary's successful build/tests; both jobs have passed on GitHub PR #1 and are required on main, including for admins.
+- `tests/benchmarks/prepare.py`: a bounded download and complete-record prefix create a reproducible real-traffic subset without rewriting packets or committing a third-party capture.
+- `tests/benchmarks/run.py`: a private veth pair and maximum-speed replay compare filter placement without transmitting the capture onto a real network; three trials and drop counters make the result auditable.
+- `BENCHMARKS.md` and `benchmarks/2026-10-28/*`: raw per-trial commands/counters and hardware/kernel/source metadata support the README's exact values; virtual-link offered load is not a physical wire-speed claim.
+- `.gitignore`, `.dockerignore`, `LICENSE`, `IDEAS.md`: exclude local secrets/build outputs, minimize container context, state MIT licensing, and reserve ideas for explicitly authorized scope changes.

@@ -6,9 +6,33 @@ services:
       POSTGRES_USER: packetpeek
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your environment}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U packetpeek -d packetpeek"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Database=packetpeek;Username=packetpeek;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your environment}
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY to at least 32 bytes}
+      Operator__Username: ${OPERATOR_USERNAME:-operator}
+      Operator__Password: ${OPERATOR_PASSWORD:?Set OPERATOR_PASSWORD to a strong password}
+      Database__Migrate: "true"
+      Engine__Enabled: ${ENGINE_ENABLED:-false}
+      Engine__Path: /usr/local/bin/libpeek
+      Engine__Pcap: ${ENGINE_PCAP:-/app/fixtures/http.pcap}
+      Engine__Filter: ${ENGINE_FILTER:-ip or ip6}
+      Console__ApiBaseUrl: http://127.0.0.1:8080/
 
 volumes:
   postgres_data:

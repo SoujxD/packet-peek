@@ -1,0 +1,20 @@
+@page "/"
+@page "/flows"
+@inherits SessionComponent
+<PageTitle>Flows | PacketPeek</PageTitle>
+<h1>Flows</h1>
+@if (!Session.Authenticated) { <p>Sign in to view captured traffic.</p> }
+else
+{
+    @if (Session.Error.Length > 0) { <p role="alert" class="error">@Session.Error</p> }
+    <h2>Live packets</h2><p>Sampled at up to 20 updates/sec. Latest 50 samples; these are not total counts.</p>
+    <div class="table"><table><thead><tr><th>Source</th><th>Destination</th><th>Protocol</th><th>Bytes</th></tr></thead><tbody>
+    @foreach (var packet in Session.PacketSnapshot())
+    { <tr><td>@packet.SrcIp:@packet.SrcPort</td><td>@packet.DstIp:@packet.DstPort</td><td>@packet.Protocol</td><td>@packet.Bytes</td></tr> }
+    </tbody></table></div>
+    <h2>Closed flows</h2><p>Latest 500 summaries, refreshed every second. Totals include all parsed packets.</p>
+    <div class="table"><table><thead><tr><th>Source</th><th>Destination</th><th>Protocol</th><th>Packets</th><th>Bytes</th></tr></thead><tbody>
+    @foreach (var flow in Session.Flows)
+    { <tr><td>@flow.SrcIp:@flow.SrcPort</td><td>@flow.DstIp:@flow.DstPort</td><td>@flow.Protocol</td><td>@flow.Packets</td><td>@flow.Bytes</td></tr> }
+    </tbody></table></div>
+}

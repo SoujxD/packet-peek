@@ -1,0 +1,34 @@
+@inherits LayoutComponentBase
+@inject ConsoleSession Session
+
+<header><strong>PacketPeek</strong><nav><NavLink href="flows">Flows</NavLink><NavLink href="rules">Rules</NavLink><NavLink href="alerts">Alerts</NavLink></nav></header>
+<main>
+    @if (!Session.Authenticated)
+    {
+        <section aria-label="Operator login">
+            <h2>Operator sign in</h2>
+            <label>Username <input @bind="username" autocomplete="username" /></label>
+            <label>Password <input type="password" @bind="password" autocomplete="current-password" /></label>
+            <button @onclick="Login" disabled="@busy">Sign in</button>
+        </section>
+    }
+    else
+    {
+        <div class="session">Signed in as @Session.Username <button @onclick="Logout">Sign out</button></div>
+    }
+    @if (!string.IsNullOrEmpty(error)) { <p role="alert" class="error">@error</p> }
+    @Body
+</main>
+
+@code {
+    private string username = "", password = "", error = "";
+    private bool busy;
+    private async Task Login()
+    {
+        busy = true; error = "";
+        try { await Session.Login(username, password); password = ""; }
+        catch (Exception ex) { error = ex.Message; }
+        finally { busy = false; }
+    }
+    private async Task Logout() { await Session.Logout(); }
+}

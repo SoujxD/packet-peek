@@ -1,0 +1,24 @@
+@page "/alerts"
+@inherits SessionComponent
+<PageTitle>Alerts | PacketPeek</PageTitle>
+<h1>Alerts</h1>
+@if (!Session.Authenticated) { <p>Sign in to view alerts.</p> }
+else
+{
+    <p>Latest 500 alerts. New alerts arrive through the live connection.</p>
+    @if (error.Length > 0) { <p role="alert" class="error">@error</p> }
+    <div class="table"><table><thead><tr><th>Time (UTC)</th><th>Rule</th><th>Group</th><th>Value</th><th>Details</th></tr></thead><tbody>
+    @foreach (var alert in Session.Alerts)
+    { <tr><td>@alert.FiredAt.ToUniversalTime().ToString("u")</td><td>@alert.RuleName</td><td>@alert.GroupKey</td><td>@alert.Value</td><td><button @onclick="() => Details(alert.Id)">Inspect</button></td></tr> }
+    </tbody></table></div>
+    @if (details is { } item)
+    {
+        <section><h2>Alert @item.GetProperty("id")</h2><dl>
+        @foreach (var property in item.EnumerateObject()) { <dt>@property.Name</dt><dd>@property.Value</dd> }
+        </dl><button @onclick="() => details = null">Close</button></section>
+    }
+}
+@code {
+    private System.Text.Json.JsonElement? details; private string error = "";
+    private async Task Details(long id) { try { details = await Session.AlertDetails(id); } catch (Exception ex) { error = ex.Message; } }
+}

@@ -1,0 +1,9 @@
+Actual: 511830 packets (201517590 bytes) sent in 15.21 seconds
+Rated: 13244877.3 Bps, 105.95 Mbps, 33640.36 pps
+Flows: 5627 flows, 369.83 fps, 511120 unique flow packets, 550 unique non-flow packets
+Statistics for network device: peek-tx
+	Successful packets:        511830
+	Failed packets:            0
+	Truncated packets:         0
+	Retried packets (ENOBUFS): 0
+	Retried packets (EAGAIN):  0

@@ -1,0 +1,173 @@
+{
+  "kernel": "5.15.153.1-microsoft-standard-WSL2",
+  "platform": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "visible_cpus": 16,
+  "cpuinfo": "\t: AMD Ryzen 7 5800H with Radeon Graphics",
+  "runs": [
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 18.049625,
+      "read_span_seconds": 15.338995,
+      "capture_received": 95190,
+      "capture_dropped": 0,
+      "mode": "kernel",
+      "repeat": 1,
+      "parsed_packets_per_second": 6205.75,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    },
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 17.990037,
+      "read_span_seconds": 15.26056,
+      "capture_received": 511832,
+      "capture_dropped": 0,
+      "mode": "userspace",
+      "repeat": 1,
+      "parsed_packets_per_second": 6237.65,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30",
+        "--userspace-filter"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    },
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 17.918685,
+      "read_span_seconds": 15.174359,
+      "capture_received": 95190,
+      "capture_dropped": 0,
+      "mode": "kernel",
+      "repeat": 2,
+      "parsed_packets_per_second": 6273.08,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    },
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 19.248869,
+      "read_span_seconds": 16.590712,
+      "capture_received": 511832,
+      "capture_dropped": 0,
+      "mode": "userspace",
+      "repeat": 2,
+      "parsed_packets_per_second": 5737.55,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30",
+        "--userspace-filter"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    },
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 19.128474,
+      "read_span_seconds": 16.307775,
+      "capture_received": 95190,
+      "capture_dropped": 0,
+      "mode": "kernel",
+      "repeat": 3,
+      "parsed_packets_per_second": 5837.09,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    },
+    {
+      "packets": 95190,
+      "flows": 1374,
+      "elapsed_seconds": 17.970959,
+      "read_span_seconds": 15.297205,
+      "capture_received": 511830,
+      "capture_dropped": 0,
+      "mode": "userspace",
+      "repeat": 3,
+      "parsed_packets_per_second": 6222.71,
+      "engine_command": [
+        "/work/build/benchmark-native/libpeek",
+        "--interface",
+        "peek-rx",
+        "--filter",
+        "tcp port 80",
+        "--idle-seconds",
+        "30",
+        "--userspace-filter"
+      ],
+      "replay_command": [
+        "tcpreplay",
+        "--intf1=peek-tx",
+        "--topspeed",
+        "--loop=10",
+        "build/benchmarks/bigFlows.prefix.pcap"
+      ]
+    }
+  ]
+}

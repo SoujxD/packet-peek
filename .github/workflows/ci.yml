@@ -8,7 +8,49 @@ permissions:
   contents: read
 
 jobs:
-  checkout:
+  native:
+    name: A - libpeek
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Install native test dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcriterion-dev libpcap-dev libprotobuf-c-dev protobuf-compiler python3-protobuf
+      - name: Build and test twice
+        run: |
+          make c-test CMAKE_ARGS=-DPython3_EXECUTABLE=/usr/bin/python3
+          make c-test CMAKE_ARGS=-DPython3_EXECUTABLE=/usr/bin/python3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libpeek-linux-x64
+          path: build/c/libpeek
+          if-no-files-found: error
+
+  managed:
+    name: B - API and end-to-end
+    needs: native
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Install artifact runtime dependencies
+        run: sudo apt-get update && sudo apt-get install -y libpcap-dev libprotobuf-c-dev protobuf-compiler python3-protobuf
+      - uses: actions/download-artifact@v4
+        with:
+          name: libpeek-linux-x64
+          path: build/artifact
+      - name: Verify downloaded binary framing
+        run: |
+          chmod +x build/artifact/libpeek
+          /usr/bin/python3 tests/test_framing.py build/artifact/libpeek
+      - name: Build and run xUnit twice
+        run: |
+          dotnet test dotnet/PacketPeek.sln -c Release --verbosity minimal
+          dotnet test dotnet/PacketPeek.sln -c Release --no-build --no-restore --verbosity minimal
+      - name: Compose end-to-end twice
+        run: |
+          bash tests/e2e/run.sh
+          bash tests/e2e/run.sh
