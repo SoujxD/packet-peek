@@ -1,5 +1,7 @@
 # PacketPeek
 
+[![CI](https://github.com/SoujxD/packet-peek/actions/workflows/ci.yml/badge.svg)](https://github.com/SoujxD/packet-peek/actions/workflows/ci.yml)
+
 Status: in development
 
 ```mermaid
@@ -53,6 +55,8 @@ bash tests/e2e/run.sh
 
 Use .NET SDK 8. The integration tests use Testcontainers and require Docker. The end-to-end script creates fresh credentials, an isolated Compose project, and temporary database storage; it removes that project's containers and volume on exit. Override `PYTHON` if your Python executable has another name. Python selected by CMake must have the protobuf module installed.
 
+Optional real-browser verification: `bash tests/ui/run.sh`. This builds a pinned Playwright/Chromium test image and uses another isolated Compose project to check login, rule creation/editing/deletion, flow display, alert drill-down, and logout. Screenshots are written to ignored `build/ui/`. The browser smoke test passed locally; it is separate from the required two-job CI workflow.
+
 Generated protobuf-c bindings are committed. Regenerate after changing the schema with `protoc-c -I proto --c_out=c/generated proto/events.proto` (package `protobuf-c-compiler`). C# classes are generated during the .NET build; `Grpc.Tools` is a code-generation dependency only. The runtime transport is a child process pipe, not gRPC.
 
 ## Behavior and limits
@@ -73,4 +77,4 @@ The ranges overlap. The generator achieved roughly 100 Mbps on this virtual link
 
 ## CI status
 
-The Actions workflow builds/tests libpeek and uploads its binary, then runs .NET integration tests and Compose end-to-end tests in a dependent job. Local tests and workflow lint passed. No Git remote is configured, so a green Actions run on a PR and required-check branch protection remain unverified. Do not treat local validation as GitHub execution evidence.
+The Actions workflow builds/tests libpeek and uploads its binary, then runs .NET integration tests and Compose end-to-end tests in a dependent job. Both jobs passed on [PR #1](https://github.com/SoujxD/packet-peek/pull/1), including repeated native, xUnit, and Compose tests. Both jobs are required checks on `main`, including for administrators. See the [Actions runs](https://github.com/SoujxD/packet-peek/actions/workflows/ci.yml) for current results.

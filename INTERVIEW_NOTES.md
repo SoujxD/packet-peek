@@ -1,6 +1,6 @@
 # Interview notes
 
-Study notes, not reviewer marketing. CI on a real PR and physical-NIC wire-speed testing remain unverified. Browser automation could not initialize in this environment; page compilation, route responses, API tests, and SignalR integration tests passed, but a visual browser check was not completed.
+Study notes, not reviewer marketing. Both CI jobs passed on GitHub PR #1 and are enforced on main. Physical-NIC wire-speed testing remains unverified.
 
 - `README.md`: separates implemented behavior from measured results because the benchmark's offered load did not establish saturated capacity or a kernel-filter speedup.
 - `proto/events.proto`: a shared protobuf envelope with `oneof` distinguishes packets from flow closures without runtime transport-specific type guessing; stdout framing is four-byte network-order length plus payload.
@@ -46,7 +46,8 @@ Study notes, not reviewer marketing. CI on a real PR and physical-NIC wire-speed
 - `Dockerfile`: separate native and .NET build stages produce one nonroot runtime container, retaining the process boundary while removing compiler toolchains from runtime.
 - `docker-compose.yml`: Postgres health gates app startup; required environment secrets avoid committed credentials, and a named volume retains operator/rule/alert history.
 - `tests/e2e/run.sh`: API-created rules followed by a host-managed pcap replay test the entire data path; unique project names and scoped teardown isolate test storage.
-- `.github/workflows/ci.yml`: the managed job depends on the uploaded native binary's successful build/tests; a real PR run and repository required-check settings are still external follow-up work.
+- `tests/ui/*`: optional Chromium smoke tests exercise real Blazor interactions and preserve screenshots locally; they verify login, rules CRUD, flow/alert display, drill-down, and logout without adding frontend production dependencies.
+- `.github/workflows/ci.yml`: the managed job depends on the uploaded native binary's successful build/tests; both jobs have passed on GitHub PR #1 and are required on main, including for admins.
 - `tests/benchmarks/prepare.py`: a bounded download and complete-record prefix create a reproducible real-traffic subset without rewriting packets or committing a third-party capture.
 - `tests/benchmarks/run.py`: a private veth pair and maximum-speed replay compare filter placement without transmitting the capture onto a real network; three trials and drop counters make the result auditable.
 - `BENCHMARKS.md` and `benchmarks/2026-10-28/*`: raw per-trial commands/counters and hardware/kernel/source metadata support the README's exact values; virtual-link offered load is not a physical wire-speed claim.
