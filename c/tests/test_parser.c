@@ -1,6 +1,18 @@
 #include <criterion/criterion.h>
 #include "peek/parser.h"
 
+Test(udp, decodes_ports_and_validates_datagram_length)
+{
+    uint8_t data[12] = {0x14, 0xe9, 0, 53, 0, 12, 0, 0};
+    PeekTransport out;
+    cr_assert(peek_udp(data, 12, &out));
+    cr_assert_eq(out.src_port, 5353); cr_assert_eq(out.dst_port, 53);
+    cr_assert_eq(out.header_length, 8);
+    for (size_t n = 0; n < 12; ++n) cr_assert_not(peek_udp(data, n, &out));
+    data[5] = 7; cr_assert_not(peek_udp(data, 12, &out));
+    data[5] = 13; cr_assert_not(peek_udp(data, 12, &out));
+}
+
 Test(tcp, decodes_ports_options_and_rejects_bad_offset)
 {
     uint8_t data[24] = {0x30, 0x39, 0, 80}; data[12] = 0x60;

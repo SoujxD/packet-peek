@@ -14,4 +14,5 @@ bool peek_ipv4(const uint8_t *data, size_t length, PeekIp *out);
 bool peek_ipv6(const uint8_t *data, size_t length, PeekIp *out);
 typedef struct { uint16_t src_port, dst_port; size_t header_length; } PeekTransport;
 bool peek_tcp(const uint8_t *data, size_t length, PeekTransport *out);
+bool peek_udp(const uint8_t *data, size_t length, PeekTransport *out);
 #endif
