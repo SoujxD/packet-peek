@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PacketPeek;
+using PacketPeek.Components;
 using Serilog;
 using Serilog.Formatting.Compact;
 
@@ -41,15 +42,20 @@ builder.Services.AddHostedService<RuleWorker>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<LiveEvents>();
 builder.Services.AddHostedService(services => services.GetRequiredService<LiveEvents>());
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddScoped<ConsoleSession>();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseSwagger(); app.UseSwaggerUI();
 app.UseAuthentication(); app.UseAuthorization();
+app.UseStaticFiles();
+app.UseAntiforgery();
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 app.MapAuth();
 app.MapRuleEndpoints();
 app.MapReadEndpoints();
 app.MapHub<LiveHub>("/hubs/live");
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 await app.InitializeDatabase();
 app.Run();
 
