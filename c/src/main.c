@@ -1,7 +1,27 @@
+#include "peek/capture.h"
+#include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main(void)
+int main(int argc, char **argv)
 {
-    puts("libpeek v0");
-    return 0;
+    const char *file = NULL, *interface_name = NULL, *filter = "ip or ip6";
+    unsigned long idle = 30;
+    for (int i = 1; i < argc; ++i) {
+        if (i + 1 >= argc) goto usage;
+        const char *value = argv[++i];
+        if (!strcmp(argv[i - 1], "--pcap")) file = value;
+        else if (!strcmp(argv[i - 1], "--interface")) interface_name = value;
+        else if (!strcmp(argv[i - 1], "--filter")) filter = value;
+        else if (!strcmp(argv[i - 1], "--idle-seconds")) {
+            char *end; errno = 0; idle = strtoul(value, &end, 10);
+            if (errno || *end || !idle || idle > 86400 || *value == '-') goto usage;
+        } else goto usage;
+    }
+    if ((!file && !interface_name) || (file && interface_name)) goto usage;
+    return peek_capture(file, interface_name, filter, (uint64_t)idle * 1000000u, NULL, NULL, NULL);
+usage:
+    fprintf(stderr, "usage: libpeek (--pcap FILE | --interface NAME) [--filter BPF] [--idle-seconds N]\n");
+    return 2;
 }
