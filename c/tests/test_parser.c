@@ -1,6 +1,18 @@
 #include <criterion/criterion.h>
 #include "peek/parser.h"
 
+Test(tcp, decodes_ports_options_and_rejects_bad_offset)
+{
+    uint8_t data[24] = {0x30, 0x39, 0, 80}; data[12] = 0x60;
+    PeekTransport out;
+    cr_assert(peek_tcp(data, 24, &out));
+    cr_assert_eq(out.src_port, 12345); cr_assert_eq(out.dst_port, 80);
+    cr_assert_eq(out.header_length, 24);
+    for (size_t n = 0; n < 24; ++n) cr_assert_not(peek_tcp(data, n, &out));
+    data[12] = 0x40; cr_assert_not(peek_tcp(data, 24, &out));
+    data[12] = 0x70; cr_assert_not(peek_tcp(data, 24, &out));
+}
+
 Test(ipv6, decodes_base_header_and_checks_payload_bounds)
 {
     uint8_t data[48] = {0x60, 0, 0, 0, 0, 8, 17, 64};

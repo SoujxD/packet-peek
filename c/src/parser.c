@@ -3,6 +3,16 @@
 
 static uint16_t be16(const uint8_t *p) { return (uint16_t)((uint16_t)p[0] << 8 | p[1]); }
 
+bool peek_tcp(const uint8_t *data, size_t length, PeekTransport *out)
+{
+    if (!data || !out || length < 20) return false;
+    size_t header = (data[12] >> 4) * 4u;
+    if (header < 20 || header > length) return false;
+    out->src_port = be16(data); out->dst_port = be16(data + 2);
+    out->header_length = header;
+    return true;
+}
+
 bool peek_ipv6(const uint8_t *data, size_t length, PeekIp *out)
 {
     if (!data || !out || length < 40 || data[0] >> 4 != 6) return false;
