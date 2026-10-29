@@ -34,6 +34,8 @@ builder.Services.AddAuthorization(options => options.AddPolicy("Operator", polic
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<PacketQueue>();
+builder.Services.AddHostedService<EngineBridge>();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseSwagger(); app.UseSwaggerUI();
