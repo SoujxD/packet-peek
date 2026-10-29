@@ -1,5 +1,7 @@
 #include "peek/capture.h"
+#include "peek/emitter.h"
 #include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +22,11 @@ int main(int argc, char **argv)
         } else goto usage;
     }
     if ((!file && !interface_name) || (file && interface_name)) goto usage;
-    return peek_capture(file, interface_name, filter, (uint64_t)idle * 1000000u, NULL, NULL, NULL);
+    signal(SIGPIPE, SIG_IGN);
+    int result = peek_capture(file, interface_name, filter, (uint64_t)idle * 1000000u,
+                              peek_emit_packet, peek_emit_flow, stdout);
+    if (result && errno == EPIPE) { fprintf(stderr, "stdout closed (EPIPE), stopping\n"); return 0; }
+    return result;
 usage:
     fprintf(stderr, "usage: libpeek (--pcap FILE | --interface NAME) [--filter BPF] [--idle-seconds N]\n");
     return 2;
