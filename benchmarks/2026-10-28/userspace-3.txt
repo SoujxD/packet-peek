@@ -1,0 +1,3 @@
+packets=95190 flows=1374
+elapsed_seconds=17.970959 read_span_seconds=15.297205
+capture_received=511830 capture_dropped=0
