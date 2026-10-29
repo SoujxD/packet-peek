@@ -15,7 +15,7 @@ builder.Host.UseSerilog((context, config) => config
         retainedFileCountLimit: 7));
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("Postgres") ?? "Host=localhost;Database=packetpeek;Username=packetpeek"));
-builder.Services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddIdentityCore<User>().AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     var signingKey = builder.Configuration["Jwt:Key"];

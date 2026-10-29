@@ -8,11 +8,14 @@ namespace PacketPeek.Tests;
 
 public class AppFactory : WebApplicationFactory<Program>
 {
+    public string? Connection { get; init; }
     public const string TestKey = "test-only-signing-key-32-bytes-minimum-12345";
     protected override void ConfigureWebHost(IWebHostBuilder builder) => builder
+        .UseContentRoot(Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../PacketPeek")))
         .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Jwt:Key"] = TestKey
+            ["Jwt:Key"] = TestKey,
+            ["ConnectionStrings:Postgres"] = Connection ?? "Host=localhost;Database=packetpeek;Username=packetpeek"
         }));
 }
 
