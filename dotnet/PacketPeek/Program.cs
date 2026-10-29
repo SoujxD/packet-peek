@@ -38,6 +38,9 @@ builder.Services.AddSingleton<PacketQueue>();
 builder.Services.AddHostedService<EngineBridge>();
 builder.Services.AddSingleton<RuleEvaluator>();
 builder.Services.AddHostedService<RuleWorker>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<LiveEvents>();
+builder.Services.AddHostedService(services => services.GetRequiredService<LiveEvents>());
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseSwagger(); app.UseSwaggerUI();
@@ -46,6 +49,7 @@ app.MapGet("/healthz", () => Results.Ok(new { status = "ok" })).AllowAnonymous()
 app.MapAuth();
 app.MapRuleEndpoints();
 app.MapReadEndpoints();
+app.MapHub<LiveHub>("/hubs/live");
 await app.InitializeDatabase();
 app.Run();
 

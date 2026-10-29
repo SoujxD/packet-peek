@@ -57,7 +57,7 @@ public class RuleEvaluator
     };
 }
 
-public class RuleWorker(PacketQueue queue, IServiceScopeFactory scopes, RuleEvaluator evaluator) : BackgroundService
+public class RuleWorker(PacketQueue queue, IServiceScopeFactory scopes, RuleEvaluator evaluator, LiveEvents live) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -69,6 +69,8 @@ public class RuleWorker(PacketQueue queue, IServiceScopeFactory scopes, RuleEval
             var alerts = evaluator.Evaluate(packet, rules);
             db.Alerts.AddRange(alerts);
             await db.SaveChangesAsync(stoppingToken);
+            foreach (var alert in alerts) await live.Alert(alert, stoppingToken);
+            live.Packet(packet);
         }
     }
 }
