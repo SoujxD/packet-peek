@@ -39,6 +39,9 @@ app.UseSerilogRequestLogging();
 app.UseSwagger(); app.UseSwaggerUI();
 app.UseAuthentication(); app.UseAuthorization();
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+app.MapAuth();
+app.MapRuleEndpoints();
+await app.InitializeDatabase();
 app.Run();
 
 public partial class Program { }
