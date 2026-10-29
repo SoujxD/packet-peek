@@ -32,6 +32,7 @@ services:
       Engine__Path: /usr/local/bin/libpeek
       Engine__Pcap: ${ENGINE_PCAP:-/app/fixtures/http.pcap}
       Engine__Filter: ${ENGINE_FILTER:-ip or ip6}
+      Console__ApiBaseUrl: http://127.0.0.1:8080/
 
 volumes:
   postgres_data:

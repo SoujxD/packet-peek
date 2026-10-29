@@ -9,7 +9,7 @@ namespace PacketPeek;
 
 public record AlertView(long Id, int RuleId, string RuleName, DateTimeOffset FiredAt, string GroupKey, long Value);
 
-public sealed class ConsoleSession(NavigationManager navigation) : IAsyncDisposable
+public sealed class ConsoleSession(NavigationManager navigation, IConfiguration configuration) : IAsyncDisposable
 {
     private readonly HttpClient client = new();
     private HubConnection? hub;
@@ -27,7 +27,7 @@ public sealed class ConsoleSession(NavigationManager navigation) : IAsyncDisposa
 
     public async Task Login(string username, string password)
     {
-        client.BaseAddress ??= new Uri(navigation.BaseUri);
+        client.BaseAddress ??= new Uri(configuration["Console:ApiBaseUrl"] ?? navigation.BaseUri);
         using var response = await client.PostAsJsonAsync("api/auth/token", new LoginRequest(username, password));
         await Ensure(response);
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();

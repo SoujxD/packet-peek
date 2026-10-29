@@ -7,7 +7,8 @@ else
 {
     <p>Fire when a metric exceeds its threshold within the selected window. Alerts re-arm once the value falls back.</p>
     @if (error.Length > 0) { <p role="alert" class="error">@error</p> }
-    <EditForm Model="form" OnSubmit="Save">
+    <EditForm Model="form" OnValidSubmit="Save">
+        <ValidationSummary />
         <label>Name <InputText @bind-Value="form.Name" /></label>
         <label>Metric <InputSelect @bind-Value="form.Metric"><option>packets</option><option>bytes</option><option>distinct_dst_ips</option></InputSelect></label>
         <label>Group by <InputSelect @bind-Value="form.Grouping"><option>src_ip</option><option>src_ip+dst_port</option></InputSelect></label>

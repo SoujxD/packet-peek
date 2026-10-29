@@ -4,7 +4,7 @@ These are maximum-speed replay measurements on an isolated Docker/WSL2 veth pair
 
 ## Environment
 
-- Date: 2026-10-28, America/Los_Angeles (trials around 19:42–19:45 PDT).
+- Date: 2026-10-28, America/Los_Angeles.
 - Host: Lenovo 82K2; AMD Ryzen 7 5800H, 8 cores / 16 logical processors; 14,877,257,728 bytes installed memory.
 - Container: Ubuntu 24.04, 16 visible CPUs, 7,027,040 kB visible memory.
 - Kernel: `5.15.153.1-microsoft-standard-WSL2`, x86_64.

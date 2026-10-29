@@ -18,8 +18,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libcriterion-dev libpcap-dev libprotobuf-c-dev protobuf-compiler python3-protobuf
       - name: Build and test twice
         run: |
-          make c-test
-          make c-test
+          make c-test CMAKE_ARGS=-DPython3_EXECUTABLE=/usr/bin/python3
+          make c-test CMAKE_ARGS=-DPython3_EXECUTABLE=/usr/bin/python3
       - uses: actions/upload-artifact@v4
         with:
           name: libpeek-linux-x64
