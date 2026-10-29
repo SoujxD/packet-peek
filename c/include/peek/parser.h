@@ -11,4 +11,5 @@ typedef struct {
     size_t header_length, total_length;
 } PeekIp;
 bool peek_ipv4(const uint8_t *data, size_t length, PeekIp *out);
+bool peek_ipv6(const uint8_t *data, size_t length, PeekIp *out);
 #endif

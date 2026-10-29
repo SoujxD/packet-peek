@@ -3,6 +3,18 @@
 
 static uint16_t be16(const uint8_t *p) { return (uint16_t)((uint16_t)p[0] << 8 | p[1]); }
 
+bool peek_ipv6(const uint8_t *data, size_t length, PeekIp *out)
+{
+    if (!data || !out || length < 40 || data[0] >> 4 != 6) return false;
+    size_t total = 40u + be16(data + 4);
+    if (total > length) return false;
+    memset(out, 0, sizeof *out);
+    memcpy(out->src, data + 8, 16); memcpy(out->dst, data + 24, 16);
+    out->version = 6; out->protocol = data[6];
+    out->header_length = 40; out->total_length = total;
+    return true;
+}
+
 bool peek_ipv4(const uint8_t *data, size_t length, PeekIp *out)
 {
     if (!data || !out || length < 20 || data[0] >> 4 != 4) return false;
