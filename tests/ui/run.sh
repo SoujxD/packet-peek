@@ -11,7 +11,8 @@ fi
 export POSTGRES_PASSWORD="$("$PYTHON" -c 'import secrets; print(secrets.token_hex(20))')"
 export JWT_KEY="$("$PYTHON" -c 'import secrets; print(secrets.token_hex(32))')"
 export OPERATOR_PASSWORD="Ui-$("$PYTHON" -c 'import secrets; print(secrets.token_hex(16))')!"
-export OPERATOR_USERNAME=operator POSTGRES_PORT=0 APP_PORT=0 ENGINE_ENABLED=false
+export GRAFANA_ADMIN_PASSWORD="Grafana-$("$PYTHON" -c 'import secrets; print(secrets.token_hex(16))')!"
+export OPERATOR_USERNAME=operator POSTGRES_PORT=0 APP_PORT=0 PROMETHEUS_PORT=0 GRAFANA_PORT=0 LOKI_PORT=0 ALLOY_PORT=0 ENGINE_ENABLED=false
 compose=(docker compose -p "$project" -f docker-compose.yml)
 cleanup() {
     result=$?

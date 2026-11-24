@@ -1,0 +1,679 @@
+{
+    "schemaVersion":  41,
+    "id":  null,
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "builtIn":  1,
+                                         "datasource":  {
+                                                            "type":  "grafana",
+                                                            "uid":  "-- Grafana --"
+                                                        },
+                                         "type":  "dashboard",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "enable":  true
+                                     }
+                                 ]
+                    },
+    "version":  1,
+    "panels":  [
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "thresholds":  {
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "value":  null,
+                                                                                                 "color":  "red"
+                                                                                             },
+                                                                                             {
+                                                                                                 "value":  1,
+                                                                                                 "color":  "green"
+                                                                                             }
+                                                                                         ],
+                                                                               "mode":  "absolute"
+                                                                           },
+                                                            "mappings":  [
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "1":  {
+                                                                                                           "text":  "Running",
+                                                                                                           "color":  "green"
+                                                                                                       },
+                                                                                                 "0":  {
+                                                                                                           "text":  "Stopped",
+                                                                                                           "color":  "gray"
+                                                                                                       }
+                                                                                             },
+                                                                                 "type":  "value"
+                                                                             }
+                                                                         ],
+                                                            "decimals":  2,
+                                                            "min":  null,
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "max":  null,
+                                                            "unit":  "short"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  1,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Native engine status",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "",
+                                           "expr":  "packetpeek_engine_running",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "stat",
+                       "description":  "1 means the native capture process is running. 0 is expected when capture is disabled.",
+                       "options":  {
+                                       "textMode":  "auto",
+                                       "graphMode":  "area",
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "justifyMode":  "center",
+                                       "orientation":  "auto",
+                                       "colorMode":  "value"
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "pps"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  2,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  5,
+                                       "h":  4,
+                                       "x":  4
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Packet processing throughput",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "processed / sec",
+                                           "expr":  "sum(rate(packetpeek_packets_processed_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "stat",
+                       "description":  "Packets evaluated by the managed rule worker per second.",
+                       "options":  {
+                                       "textMode":  "auto",
+                                       "graphMode":  "area",
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "justifyMode":  "center",
+                                       "orientation":  "auto",
+                                       "colorMode":  "value"
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "ops"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  3,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  5,
+                                       "h":  4,
+                                       "x":  9
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Flow creation rate",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "flows / sec",
+                                           "expr":  "sum(rate(packetpeek_flows_created_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "stat",
+                       "description":  "Flow summaries received from the native engine per second.",
+                       "options":  {
+                                       "textMode":  "auto",
+                                       "graphMode":  "area",
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "justifyMode":  "center",
+                                       "orientation":  "auto",
+                                       "colorMode":  "value"
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "ops"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  4,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  5,
+                                       "h":  4,
+                                       "x":  14
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Alert generation rate",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "alerts / sec",
+                                           "expr":  "sum(rate(packetpeek_alerts_triggered_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "stat",
+                       "description":  "Alerts triggered by rule evaluation per second.",
+                       "options":  {
+                                       "textMode":  "auto",
+                                       "graphMode":  "area",
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "justifyMode":  "center",
+                                       "orientation":  "auto",
+                                       "colorMode":  "value"
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "min":  null,
+                                                            "decimals":  2,
+                                                            "unit":  "percentunit",
+                                                            "max":  null
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  5,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  5,
+                                       "h":  4,
+                                       "x":  19
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Channel utilization",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "",
+                                           "expr":  "packetpeek_channel_utilization_ratio",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "stat",
+                       "description":  "Buffered packet events divided by configured bounded channel capacity.",
+                       "options":  {
+                                       "textMode":  "auto",
+                                       "graphMode":  "area",
+                                       "reduceOptions":  {
+                                                             "values":  false,
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ],
+                                                             "fields":  ""
+                                                         },
+                                       "justifyMode":  "center",
+                                       "orientation":  "auto",
+                                       "colorMode":  "value"
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "short"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  6,
+                       "gridPos":  {
+                                       "y":  4,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Packets processed over time",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "packets / 5m",
+                                           "expr":  "sum(increase(packetpeek_packets_processed_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "Packet count processed in each rolling five-minute interval.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "ops"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  7,
+                       "gridPos":  {
+                                       "y":  4,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Native engine error rate",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "errors / sec",
+                                           "expr":  "sum(rate(packetpeek_engine_errors_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "Unexpected native engine errors per second. No kernel/libpcap drop metric is available.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "short"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  8,
+                       "gridPos":  {
+                                       "y":  12,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Packet channel occupancy and capacity",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "buffered",
+                                           "expr":  "packetpeek_channel_depth",
+                                           "refId":  "A"
+                                       },
+                                       {
+                                           "legendFormat":  "capacity",
+                                           "expr":  "packetpeek_channel_capacity",
+                                           "refId":  "B"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "Buffered packets and configured channel capacity. This measures managed buffering, not kernel capture drops.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "s"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  9,
+                       "gridPos":  {
+                                       "y":  12,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Rule evaluation latency",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "p95",
+                                           "expr":  "histogram_quantile(0.95, sum by (le) (rate(packetpeek_rule_evaluation_duration_seconds_bucket[5m])))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "95th percentile duration for evaluating all active rules for one packet.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "reqps"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  10,
+                       "gridPos":  {
+                                       "y":  20,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "HTTP request rate",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "{{method}} {{code}}",
+                                           "expr":  "sum by (method, code) (rate(http_requests_received_total[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "Requests per second grouped by method and response code.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "reqps"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  11,
+                       "gridPos":  {
+                                       "y":  20,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "HTTP 5xx error rate",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "5xx / sec",
+                                           "expr":  "sum(rate(http_requests_received_total{code=~\"5..\"}[5m]))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "Server error responses per second.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   },
+                   {
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "custom":  {
+                                                                           "lineInterpolation":  "smooth",
+                                                                           "showPoints":  "never",
+                                                                           "drawStyle":  "line",
+                                                                           "fillOpacity":  10
+                                                                       },
+                                                            "decimals":  2,
+                                                            "unit":  "s"
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "id":  12,
+                       "gridPos":  {
+                                       "y":  28,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "prometheus",
+                                          "uid":  "prometheus"
+                                      },
+                       "title":  "Database operation latency",
+                       "targets":  [
+                                       {
+                                           "legendFormat":  "p95",
+                                           "expr":  "histogram_quantile(0.95, sum by (le) (rate(packetpeek_db_operation_duration_seconds_bucket[5m])))",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "type":  "timeseries",
+                       "description":  "95th percentile duration for instrumented database queries and writes.",
+                       "options":  {
+                                       "legend":  {
+                                                      "placement":  "bottom",
+                                                      "showLegend":  true,
+                                                      "displayMode":  "list"
+                                                  },
+                                       "tooltip":  {
+                                                       "sort":  "desc",
+                                                       "mode":  "multi"
+                                                   }
+                                   }
+                   }
+               ],
+    "tags":  [
+                 "packetpeek",
+                 "system",
+                 "observability"
+             ],
+    "time":  {
+                 "to":  "now",
+                 "from":  "now-6h"
+             },
+    "timezone":  "browser",
+    "links":  [
+
+              ],
+    "refresh":  "15s",
+    "title":  "PacketPeek / System Overview",
+    "uid":  "packetpeek-overview"
+}

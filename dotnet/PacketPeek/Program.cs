@@ -8,8 +8,10 @@ using PacketPeek;
 using PacketPeek.Components;
 using Serilog;
 using Serilog.Formatting.Compact;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+ObservabilityMetrics.Initialize();
 builder.Host.UseSerilog((context, config) => config
     .WriteTo.Console(new CompactJsonFormatter())
     .WriteTo.File(new CompactJsonFormatter(), "logs/packetpeek-.json", rollingInterval: RollingInterval.Day,
@@ -46,16 +48,30 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddScoped<ConsoleSession>();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
+app.UseHttpMetrics();
 app.UseSwagger(); app.UseSwaggerUI();
 app.UseAuthentication(); app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
+app.MapGet("/health/live", () => Results.Ok(new { status = "live" })).AllowAnonymous();
+app.MapGet("/health/ready", async (AppDbContext db, CancellationToken ct) =>
+{
+    try
+    {
+        return await db.Database.CanConnectAsync(ct)
+            ? Results.Ok(new { status = "ready" })
+            : Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+    }
+    catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+    catch { return Results.StatusCode(StatusCodes.Status503ServiceUnavailable); }
+}).AllowAnonymous();
 app.MapAuth();
 app.MapRuleEndpoints();
 app.MapReadEndpoints();
 app.MapHub<LiveHub>("/hubs/live");
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.MapMetrics().AllowAnonymous();
 await app.InitializeDatabase();
 app.Run();
 

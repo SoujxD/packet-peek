@@ -1,0 +1,81 @@
+discovery.docker "packetpeek" {
+  host = "unix:///var/run/docker.sock"
+
+  filter {
+    name   = "label"
+    values = ["observability=true"]
+  }
+}
+
+discovery.relabel "packetpeek" {
+  targets = discovery.docker.packetpeek.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    target_label = "application"
+    replacement  = "packetpeek"
+  }
+
+  rule {
+    target_label = "environment"
+    replacement  = "local"
+  }
+}
+
+loki.source.docker "packetpeek" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.relabel.packetpeek.output
+  labels        = { job = "docker", stack = "packetpeek" }
+  relabel_rules = discovery.relabel.packetpeek.rules
+  forward_to    = [loki.process.packetpeek.receiver]
+}
+
+loki.process "packetpeek" {
+  forward_to = [loki.write.local.receiver]
+
+  // Parse Compact JSON fields without replacing the original Serilog log line.
+  // Only the bounded severity value becomes an indexed label; message and
+  // exception remain structured metadata to avoid high-cardinality labels.
+  stage.json {
+    expressions = {
+      timestamp = "\"@t\"",
+      level     = "\"@l\"",
+      message   = "\"@mt\"",
+      exception = "\"@x\"",
+    }
+  }
+
+  stage.timestamp {
+    source = "timestamp"
+    format = "RFC3339Nano"
+  }
+
+  stage.labels {
+    values = {
+      level = "level",
+    }
+  }
+
+  stage.structured_metadata {
+    values = {
+      message   = "message",
+      exception = "exception",
+    }
+  }
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

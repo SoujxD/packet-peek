@@ -26,11 +26,16 @@ Requires Docker Compose. From Bash, generate local credentials and start Postgre
 export POSTGRES_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_hex(20))')"
 export JWT_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
 export OPERATOR_PASSWORD="Local-$(python3 -c 'import secrets; print(secrets.token_hex(16))')!"
+export GRAFANA_ADMIN_PASSWORD="Grafana-$(python3 -c 'import secrets; print(secrets.token_hex(16))')!"
 export OPERATOR_USERNAME=operator
 docker compose up --build -d
 ```
 
 Open `http://localhost:8080/flows` and sign in using `OPERATOR_USERNAME` and the generated `OPERATOR_PASSWORD` from your shell. Preserve these environment values for subsequent Compose commands. The app applies committed migrations and creates the operator on first startup; an existing operator's password is not reset on later startups. Keep the JWT key stable while tokens are in use. Data persists in the named Postgres volume.
+
+## Monitoring
+
+`docker compose up --build -d` starts the full local stack. Grafana at `http://localhost:3000` provisions Prometheus and Loki plus three PacketPeek dashboards; Prometheus is at `http://localhost:9090`, Loki at `http://localhost:3100`, and Alloy's component UI at `http://localhost:12345/graph`. Monitoring ports bind to loopback. Grafana uses `admin` by default with the locally configured `GRAFANA_ADMIN_PASSWORD`; Prometheus retains 15 days and Loki 7 days by default. See the [monitoring guide](monitoring/README.md) for metrics, dashboards, alert thresholds, queries, troubleshooting, and storage details. Prometheus alert rules are evaluated locally; no notification receiver is configured.
 
 Capture is initially disabled so you can create a rule first. For example: metric `packets`, window `10`, grouping `src_ip`, threshold `1`, active. Replay the bundled synthetic fixture:
 

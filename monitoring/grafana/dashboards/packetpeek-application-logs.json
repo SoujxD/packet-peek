@@ -1,0 +1,311 @@
+{
+    "schemaVersion":  41,
+    "id":  null,
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "builtIn":  1,
+                                         "datasource":  {
+                                                            "type":  "grafana",
+                                                            "uid":  "-- Grafana --"
+                                                        },
+                                         "type":  "dashboard",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "enable":  true
+                                     }
+                                 ]
+                    },
+    "version":  1,
+    "panels":  [
+                   {
+                       "id":  1,
+                       "gridPos":  {
+                                       "y":  0,
+                                       "w":  24,
+                                       "h":  10,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Live application logs",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\"}",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Original compact Serilog JSON from the PacketPeek app container.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  2,
+                       "gridPos":  {
+                                       "y":  10,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Error logs",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\",level=~\"Error|Fatal\"}",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Application logs emitted at Error or Fatal severity.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  3,
+                       "gridPos":  {
+                                       "y":  10,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Warning logs",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\",level=\"Warning\"}",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Application logs emitted at Warning severity.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  4,
+                       "gridPos":  {
+                                       "y":  18,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Critical / fatal logs",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\",level=\"Fatal\"}",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Serilog Fatal events, the closest matching severity to critical.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  5,
+                       "gridPos":  {
+                                       "y":  18,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Native engine failures",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\"} |~ \"(?i)(libpeek|native engine|capture engine)\"",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Logs matching libpeek or capture-engine error messages.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  6,
+                       "gridPos":  {
+                                       "y":  26,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Database errors",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\",level=~\"Error|Fatal\"} |~ \"(?i)(postgres|npgsql|database|dbcommand)\"",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Error or Fatal logs matching PostgreSQL, Npgsql, or database operations.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  7,
+                       "gridPos":  {
+                                       "y":  26,
+                                       "w":  12,
+                                       "h":  8,
+                                       "x":  12
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Rule evaluation failures",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\",level=~\"Error|Fatal\"} |~ \"(?i)(rule|evaluation|evaluator)\"",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Error or Fatal logs matching rule evaluation components and messages.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   },
+                   {
+                       "id":  8,
+                       "gridPos":  {
+                                       "y":  34,
+                                       "w":  24,
+                                       "h":  8,
+                                       "x":  0
+                                   },
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "loki"
+                                      },
+                       "title":  "Application startup and shutdown",
+                       "targets":  [
+                                       {
+                                           "expr":  "{application=\"packetpeek\",service=\"app\"} |~ \"(?i)(application started|application is shutting down|now listening|hosting environment)\"",
+                                           "refId":  "A",
+                                           "queryType":  "range"
+                                       }
+                                   ],
+                       "type":  "logs",
+                       "description":  "Host lifecycle and listening messages from the app container.",
+                       "options":  {
+                                       "prettifyLogMessage":  true,
+                                       "showTime":  true,
+                                       "wrapLogMessage":  true,
+                                       "dedupStrategy":  "none",
+                                       "showCommonLabels":  false,
+                                       "enableLogDetails":  true,
+                                       "showLabels":  true,
+                                       "sortOrder":  "Descending",
+                                       "maxLines":  1000
+                                   }
+                   }
+               ],
+    "tags":  [
+                 "packetpeek",
+                 "logs",
+                 "loki"
+             ],
+    "time":  {
+                 "to":  "now",
+                 "from":  "now-1h"
+             },
+    "timezone":  "browser",
+    "links":  [
+
+              ],
+    "refresh":  "5s",
+    "title":  "PacketPeek / Application Logs",
+    "uid":  "packetpeek-application-logs"
+}

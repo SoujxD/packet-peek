@@ -63,12 +63,20 @@ public class RuleWorker(PacketQueue queue, IServiceScopeFactory scopes, RuleEval
     {
         await foreach (var packet in queue.Channel.Reader.ReadAllAsync(stoppingToken))
         {
+            ObservabilityMetrics.SetChannelDepth(queue.Channel.Reader.Count, queue.Capacity);
             using var scope = scopes.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var rules = await db.Rules.AsNoTracking().Where(x => x.Active).ToListAsync(stoppingToken);
+            var rules = await ObservabilityMetrics.MeasureDbOperationAsync(
+                () => db.Rules.AsNoTracking().Where(x => x.Active).ToListAsync(stoppingToken));
+            ObservabilityMetrics.ActiveRules.Set(rules.Count);
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
             var alerts = evaluator.Evaluate(packet, rules);
+            ObservabilityMetrics.RuleEvaluations.Inc(rules.Count);
+            ObservabilityMetrics.RuleEvaluationDuration.Observe(System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalSeconds);
             db.Alerts.AddRange(alerts);
-            await db.SaveChangesAsync(stoppingToken);
+            await ObservabilityMetrics.MeasureDbOperationAsync(() => db.SaveChangesAsync(stoppingToken));
+            ObservabilityMetrics.PacketsProcessed.Inc();
+            ObservabilityMetrics.AlertsTriggered.Inc(alerts.Count);
             foreach (var alert in alerts) await live.Alert(alert, stoppingToken);
             live.Packet(packet);
         }

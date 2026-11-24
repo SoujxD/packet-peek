@@ -1,0 +1,76 @@
+groups:
+  - name: prometheus-health
+    rules:
+      - alert: PrometheusTargetUnavailable
+        expr: up{job="prometheus"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus self-scrape is unavailable
+          description: The Prometheus /metrics endpoint has failed its self-scrape for 2 minutes. This rule is evaluated by Prometheus itself and cannot notify if the Prometheus process is fully down without an external Alertmanager.
+
+  - name: packetpeek-availability
+    rules:
+      - alert: PacketPeekApplicationUnavailable
+        expr: up{job="packetpeek"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: PacketPeek application metrics endpoint is unavailable
+          description: Prometheus has failed to scrape app:8080/metrics for at least 1 minute.
+
+      - alert: PacketPeekLiveCaptureStopped
+        expr: (packetpeek_engine_capture_expected == 1) and (packetpeek_engine_running == 0)
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: PacketPeek live capture engine stopped unexpectedly
+          description: Continuous live-interface capture was configured as enabled, but the native engine has not been running for 1 minute. Disabled capture and finite PCAP replay set packetpeek_engine_capture_expected to 0 and do not trigger this alert.
+
+  - name: packetpeek-processing
+    rules:
+      - alert: PacketPeekChannelUtilizationHigh
+        expr: packetpeek_channel_utilization_ratio > 0.80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: PacketPeek packet channel utilization is high
+          description: Managed channel utilization has remained above 80% of its configured capacity for 5 minutes. This is channel backpressure, not a kernel or libpcap packet-drop measurement.
+
+      - alert: PacketPeekRuleEvaluationLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(packetpeek_rule_evaluation_duration_seconds_bucket[5m]))) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: PacketPeek rule evaluation latency is elevated
+          description: The p95 rule evaluation duration has exceeded 100 ms for 5 minutes.
+
+  - name: packetpeek-http
+    rules:
+      - alert: PacketPeekHTTP5xxRateHigh
+        expr: |
+          (sum(rate(http_requests_received_total{code=~"5.."}[5m])) > 0.1)
+          and (sum(rate(http_requests_received_total[5m])) > 1)
+          and (sum(rate(http_requests_received_total{code=~"5.."}[5m])) / sum(rate(http_requests_received_total[5m])) > 0.05)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: PacketPeek HTTP 5xx rate is elevated
+          description: For 5 minutes, 5xx responses have exceeded both 0.1 requests/second and 5% of traffic, with total traffic above 1 request/second. The traffic floor reduces noise in low-volume local development.
+
+  - name: packetpeek-engine
+    rules:
+      - alert: PacketPeekNativeEngineFailuresRepeated
+        expr: increase(packetpeek_engine_errors_total[15m]) >= 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: PacketPeek native engine is failing repeatedly
+          description: At least 3 unexpected native engine failures have been observed in the last 15 minutes. The application container must remain available long enough for Prometheus to scrape the counter; application unavailability is covered separately.
